@@ -98,3 +98,41 @@ WORKDIR /data
 ARG user1=someuser
 ARG buildno=1
 ```
+### 网络
+- 默认运行的容器就是桥接的，其他两种不常用
+- docker network ls #列出当前的网络
+- docker inspect bridge #查看当前的桥连网络  这样可以在多个container里ping通。
+- docker run -d --name nginx1 nginx  因为是桥接的。但是每次启动可能ip就变了，我们就指定name属性，让容器在内部通过name或容器id能ping通。
+- docker run -d --name nginx2 --link nginx1 nginx
+```
+docker exec -it nginx2 bash
+apt update
+apt install -y inetutils-ping  #ping
+apt install -y dnsutils        #nslookup
+apt install -y net-tools       #ifconfig
+apt install -y iproute2        #ip
+apt install -y curl            #curl
+cat /etc/hosts
+ping nginx1
+```
+#### 桥接有时候，我们还想搞多个桥接，每个网络互相独立，不能互通
+
+# 创建自定义网络
+docker network create --driver bridge dev_web
+docker network create --driver bridge finalce_web
+docker network ls
+
+docker container run -d --name dev_nginx1 --net dev_web
+docker container run -d --name dev_nginx2 --net dev_web
+
+docker container run -d --name fin_nginx1 --net finalce_web
+docker container run -d --name fin_nginx2 --net finalce_web
+
+dev_web内的容器是互通的，但与finalce_web是不通的
+同理finalce_web内的容器是互通的，但与dev_web是不通的
+- 自定义网络自带DNS服务器，可以直接使用name或者容器id来ping，比之前省了--link
+- 如果想dev_web与finalce_web相通，可以手动加
+```
+docker network connect dev_web fin_nginx1
+docker network disconnect dev_web fin_nginx1
+```
