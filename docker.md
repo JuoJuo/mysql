@@ -47,3 +47,54 @@ docker run --volumes-from logger --name logger4 -i -t centos bash 使用刚创�
 cd /mnt  
 touch logger4  
 两个container共享一个目录
+
+### Dockerfile
+```shell
+#pull哪个镜像
+FROM centos:6
+
+# 多个lable就写多个 LABEL key2=value2
+LABEL maintainer="SvenDowideit@home.org.au"
+
+# 也可以这样： RUN ["executable", "param1", "param2"]
+# 多个命令多写几个RUN或者CMD就好了，或者用&&连接多个命令
+RUN yum install httpd  
+
+# 也可以这样： CMD ["executable", "param1", "param2"]
+# 多个命令多写几个RUN或者CMD就好了，或者用&&连接多个命令
+# 这个是在镜像运行容器的时候执行
+CMD /usr/sbin/sshd -D #
+
+#容器内哪两个可以被外部发布出去（宿主端口还未指定）
+EXPOSE 80 443
+
+#设置环境变量 ENV <key>=<value> ...
+ENV MYSQL_ROOT_PASSWORD=123456 test=123456
+
+#给镜像添加文件进去，镜像里的目的地址可以是绝对路径，也可以是相对于WORKDIR的相对路径
+ADD test.txt /absoluteDir/
+# ADD支持url
+ADD https://xxx.com/html.tar.gz /var/www.html /absoluteDir/
+# ADD支持 自动解压压缩包(自动解压哈)
+ADD nickdir.tar.gz ./
+
+#仅允许您从主机（构建Docker映像的机器）的本地文件或目录中复制到Docker映像本身。 
+COPY ./start.sh /start.sh
+
+#目前认为跟CMD类似
+# ENTRYPOINT ["executable", "param1", "param2"]
+# ENTRYPOINT command param1 param2
+ENTRYPOINT /bin/bash -c '/start.sh'
+
+#只能指定镜像内的目录，宿主的目录没法在这个File中指定，随机分配。。。。。
+VOLUME ["/var/lib/mysql"]
+
+USER zhufengjiagou
+# 整个image内的目录操作的，上下文目录
+WORKDIR /data
+
+# --build-arg <varname>=<value>构建iamge的时候可以传参哟！！！
+# ARG variables are not persisted into the built image as ENV variables are
+ARG user1=someuser
+ARG buildno=1
+```
