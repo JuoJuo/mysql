@@ -1,0 +1,6 @@
+connected react router不需要安装history，自己安装可能导致不兼容。核心是，创建这个router中间件的时候，传入history对象，自己定义了两个action，在dispatch的时候拦截，然后调用history的api
+
+saga里tabke的actionType跟reducer是两种，saga里take的actiontype，是给组件dispatch用的，（reducer里没有处理这种actionType）saga中间件拦截到这个actiontype，  
+再next啥的，然后把参数传给那个actiontype对应的generator函数！
+
+react-router-dom里有依赖2个库，history，react-router，为了功能明确，dom是在dom里用的路由包，还有移动端的啥的。
