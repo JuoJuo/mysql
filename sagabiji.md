@@ -4,3 +4,5 @@ saga里tabke的actionType跟reducer是两种，saga里take的actiontype，是给
 再next啥的，然后把参数传给那个actiontype对应的generator函数！
 
 react-router-dom里有依赖2个库，history，react-router，为了功能明确，dom是在dom里用的路由包，还有移动端的啥的。
+
+Route的component、render、children区别：component只要匹配了，就显示，render可以在匹配后，自己附加控制时候显示该组件，children就是不论匹配与否，都显示
