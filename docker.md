@@ -1,3 +1,34 @@
+
+### 配置yum源
+yum-config-manager --add-repo repository_url  
+eg: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo  
+其实就是下载一个repo文件到/etc/yum.repos.d目录里边了  
+
+
+
+### 安装无脑就行
+yum install -y yum-utils   device-mapper-persistent-data   lvm2  
+yum-config-manager     --add-repo     https://download.docker.com/linux/centos/docker-ce.repo  
+yum install docker-ce docker-ce-cli containerd.io -y  
+
+### image相关
+
+- docker image ls会有4列，分别表示repository的名字(私人做的镜像一般名字带斜杠eg:lirenjie/nodejs,官方的不带)，tag表示版本，image id，创建时间，image的大小  
+- docker search node 搜索带node关键字的所有镜像，输出5个列，镜像名、描述、stars数，是否是官方做的镜像，automated应该表示自己做的（仅仅推测）
+- docker image(可选) history node 表示查看某个镜像之前执行了哪些命令.  --no-trunc表示不省略全显示(因为有时候输出太长了)
+- docker image(可选) inspect node 查看镜像底层一点的信息，其中重要点的RootFS中的Layers比较重要，其实镜像是高度复用的，比如我使用官方的node镜像，在上面加了点东西，自己又做了一个新的镜像，这个layer会多一层的。一层一般就是一个功能，比方说node装在centos里的。那里面就有一个层是cenos。 层是高度复用的。
+- docker image pull node
+- docker image push xxx
+- docker image rmi id or name
+- docker tag [OPTIONS] IMAGE[:TAG] [REGISTRYHOST/][USERNAME/]NAME[:TAG]给本地的image起个别名，别名有规则的，REGISTRYHOST/imageName:tag  
+eg: docker tag centos:7 zhangrenyang/centos:v1  
+docker login 后直接可以用这个push，docker push zhangrenyang/centos:v1
+- build	根据Dockerfile构建镜像  
+docker build [OPTIONS] PATH | URL | -  
+eg: path: docker build -t lirenjie/node:v1  
+    url: docker build https://github.com/docker/rootfs.git#container:docker #后面表示分支:后面表示存储库中的一个子目录，该子目录将用作构建上下文。
+
+
 ### 进入容器
 
 - docker container run centos 运行一个容器（容器跑的是对应的image）
